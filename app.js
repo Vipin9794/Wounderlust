@@ -65,6 +65,17 @@ app.get("/listings",wrapAsync( async (req , res ) => {
 
 }));
 
+// Create route
+app.post("/listings" ,validateListing , wrapAsync( async (req , res , next) =>{
+    //      let result = listingSchema.validate(req.body);
+    //    console.log(result);
+        const newlisting = new Listing(req.body.listing) ;
+        await newlisting.save();
+         res.redirect("/listings");
+      
+    })
+    );
+
 //New Route 
 app.get("/listings/new" , (req , res) =>{
     res.render("listings/new.ejs");
@@ -87,25 +98,6 @@ app.get('/listings/:id', async (req, res) => {
         res.status(500).send('Server Error');
     }
 });
-
-
-// Create route
-app.post("/listings" ,validateListing , wrapAsync( async (req , res , next) =>{
-//      let result = listingSchema.validate(req.body);
-//    console.log(result);
-    const newlisting = new Listing(req.body.listing) ;
-    await newlisting.save();
-     res.redirect("/listings");
-  
-})
-);
-
-//edit route 
-app.get("/listings/:id/edit",wrapAsync( async (req,res )=>{
-    let {id} = req.params;
-    const listing = await Listing.findById(id);
-    res.render("listings/edit.ejs" , {listing});
-}));
 
 //update route
 app.put("/listings/:id" , validateListing, async (req , res)=>{
@@ -133,6 +125,18 @@ app.delete("/listings/:id" ,wrapAsync( async (req , res) =>{
     await Listing.findByIdAndDelete(id);
     res.redirect("/listings");
 }));
+
+
+//edit route 
+app.get("/listings/:id/edit",wrapAsync( async (req,res )=>{
+    let {id} = req.params;
+    const listing = await Listing.findById(id);
+    res.render("listings/edit.ejs" , {listing});
+}));
+
+
+
+
 
 
 // app.get("/testListing" , async (req , res) =>{
