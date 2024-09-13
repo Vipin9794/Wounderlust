@@ -45,6 +45,8 @@ app.get("/" , (req , res ) => {
 });
 
 const validateListing = (req , res , next) => {
+    
+
     let {error} = listingSchema.validate(req.body);
     
     if(error){
@@ -79,7 +81,7 @@ app.get('/listings/:id', async (req, res) => {
             return res.status(404).send('Listing not found');
         }
 
-        res.render('listings/show', { listing }); // Pass the listing object to the view
+        res.render('listings/show.ejs', { listing }); // Pass the listing object to the view
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
@@ -119,7 +121,7 @@ app.put("/listings/:id" , validateListing, async (req , res)=>{
 await updatedListing.save();
     res.redirect(`/listings/${id}`);
 }); 
-// app.put("/listings/:id" , async (req , res)=>{
+// app.put("/listings/:id" ,validateListing, async (req , res)=>{
 //     let {id} = req.params;
 //     await Listing.findByIdAndUpdate(id ,{...req.body.listing} );
 //     res.redirect(`/listings/${id}`);
