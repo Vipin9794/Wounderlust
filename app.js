@@ -100,7 +100,7 @@ app.get('/listings/:id', async (req, res) => {
 });
 
 //update route
-app.put("/listings/:id" , validateListing, async (req , res)=>{
+app.put("/listings/:id" ,validateListing,  wrapAsync( async (req , res)=>{
     let {id} = req.params;
     let formData = req.body.listing;
        let updatedListing = await Listing.findByIdAndUpdate(
@@ -112,7 +112,7 @@ app.put("/listings/:id" , validateListing, async (req , res)=>{
 );
 await updatedListing.save();
     res.redirect(`/listings/${id}`);
-}); 
+})); 
 // app.put("/listings/:id" ,validateListing, async (req , res)=>{
 //     let {id} = req.params;
 //     await Listing.findByIdAndUpdate(id ,{...req.body.listing} );
