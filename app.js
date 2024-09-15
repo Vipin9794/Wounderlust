@@ -9,7 +9,8 @@ const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const wrapAsync = require("./utils/wrapAsync.js")
 const ExpressError = require("./utils/ExpressError.js");
-const {listingSchema} = require("./schema.js");
+const {listingSchema , reviewSchema} = require("./schema.js");
+const Reviews = require("./models/review.js");
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 main()
@@ -44,10 +45,24 @@ app.get("/" , (req , res ) => {
     res.send("Hi , i am root");
 });
 
+// server side validation
 const validateListing = (req , res , next) => {
     
 
     let {error} = listingSchema.validate(req.body);
+    
+    if(error){
+        let errMsg = error.details.map((el) => el.message).join(",");
+        throw new ExpressError(400 , errMsg);
+    } else {
+        next();
+    }
+};
+
+const validateReview = (req , res , next) => {
+    
+
+    let {error} = reviewSchema.validate(req.body);
     
     if(error){
         let errMsg = error.details.map((el) => el.message).join(",");
@@ -86,7 +101,7 @@ app.get("/listings/new" , (req , res) =>{
 app.get('/listings/:id', async (req, res) => {
     try {
         const listingId = req.params.id;
-        const listing = await Listing.findById(listingId); // Fetch the listing from the database
+        const listing = await Listing.findById(listingId).populate("reviews"); // Fetch the listing from the database
 
         if (!listing) {
             return res.status(404).send('Listing not found');
@@ -133,6 +148,19 @@ app.get("/listings/:id/edit",wrapAsync( async (req,res )=>{
     const listing = await Listing.findById(id);
     res.render("listings/edit.ejs" , {listing});
 }));
+
+//Reviews route
+app.post("/listings/:id/review" ,validateReview, wrapAsync( async(req , res) => {
+    let listing = await Listing.findById(req.params.id);
+    let newReview = new Reviews(req.body.reviews);
+
+    listing.reviews.push(newReview);
+
+    await newReview.save();
+    await listing.save();
+
+    res.redirect(`/listings/${listing._id}`);
+} ));
 
 
 
