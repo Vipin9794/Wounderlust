@@ -51,7 +51,9 @@ router.get("/:id", async (req, res) => {
     const listing = await Listing.findById(listingId).populate("reviews"); // Fetch the listing from the database
 
     if (!listing) {
-      return res.status(404).send("Listing not found");
+      // return res.status(404).send("Listing not found");
+      req.flash("error" , "Listing you requested for does not exist!");
+      res.redirect("/listings");
     }
 
     res.render("listings/show.ejs", { listing }); // Pass the listing object to the view
@@ -76,6 +78,7 @@ router.put(
       { new: true } //ensures that updatedListing contains the updated document with all the new field values, rather than the old document before the update.
     );
     await updatedListing.save();
+    req.flash("success", " Listing Updated !");
     res.redirect(`/listings/${id}`);
   })
 );
@@ -91,6 +94,7 @@ router.delete(
   wrapAsync(async (req, res) => {
     let { id } = req.params;
     await Listing.findByIdAndDelete(id);
+    req.flash("success", " Listing Deleted!");
     res.redirect("/listings");
   })
 );
@@ -101,6 +105,11 @@ router.get(
   wrapAsync(async (req, res) => {
     let { id } = req.params;
     const listing = await Listing.findById(id);
+    if (!listing) {
+      // return res.status(404).send("Listing not found");
+      req.flash("error" , "Listing you requested for does not exist!");
+      res.redirect("/listings");
+    }
     res.render("listings/edit.ejs", { listing });
   })
 );
