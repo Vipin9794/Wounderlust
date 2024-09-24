@@ -13,7 +13,7 @@ router.post(
   wrapAsync(async (req, res) => {
     try {
       let { username, email, password } = req.body;
-      const newUser = new User({ username, email,password });
+      const newUser = new User({ username, email, password });
       const registerUser = await User.register(newUser, password);
       console.log(registerUser);
       req.flash("success", "user was registered successfully");
@@ -22,7 +22,7 @@ router.post(
       req.flash("error", e.message);
       res.redirect("/signup");
     }
-  }),
+  })
 );
 
 router.get("/login", (req, res) => {
@@ -31,13 +31,17 @@ router.get("/login", (req, res) => {
 
 router.post(
   "/login ",
-  passport.authenticate("local ", {
+  passport.authenticate("local", {
     failureRedirect: "/login",
     failureFlash: true,
   }),
-  async (req, res) => {
-    res.send("Wellcom to the Wonderlust");
-  }
+  wrapAsync(async (req, res) => {
+    // let {username} = req.body;
+    // req.flash("success",`Welcome back to Wanderlust! ${username}`);
+    // let redirectUrl = res.locals.redirectUrl || "/listings";
+    // res.redirect(redirectUrl);
+    res.send("it is working");
+  })
 );
 
 module.exports = router;
