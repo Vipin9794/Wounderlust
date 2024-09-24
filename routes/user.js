@@ -30,17 +30,17 @@ router.get("/login", (req, res) => {
 });
 
 router.post(
-  "/login ",
+  "/login",
   passport.authenticate("local", {
     failureRedirect: "/login",
     failureFlash: true,
   }),
   wrapAsync(async (req, res) => {
-    // let {username} = req.body;
-    // req.flash("success",`Welcome back to Wanderlust! ${username}`);
-    // let redirectUrl = res.locals.redirectUrl || "/listings";
-    // res.redirect(redirectUrl);
-    res.send("it is working");
+    let {username} = req.body;
+    req.flash("success",`Welcome back to Wanderlust! ${username}`);
+    let redirectUrl = res.locals.redirectUrl || "/listings";
+    res.redirect(redirectUrl);
+    //res.send("it is working");
   })
 );
 

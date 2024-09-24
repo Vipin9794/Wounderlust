@@ -4,6 +4,7 @@ const wrapAsync = require("../utils/wrapAsync.js");
 const ExpressError = require("../utils/ExpressError.js");
 const { listingSchema } = require("../schema.js");
 const Listing = require("../models/listing.js");
+const { isLoggedIn } = require("../middleware.js");
 
 const validateListing = (req, res, next) => {
   let { error } = listingSchema.validate(req.body);
@@ -26,13 +27,14 @@ router.get(
 );
 
 //New Route
-router.get("/new", (req, res) => {
+router.get("/new", isLoggedIn, (req, res) => {
   res.render("listings/new.ejs");
 });
 
 // Create route
 router.post(
   "/",
+  isLoggedIn,
   validateListing,
   wrapAsync(async (req, res, next) => {
     //      let result = listingSchema.validate(req.body);
@@ -52,7 +54,7 @@ router.get("/:id", async (req, res) => {
 
     if (!listing) {
       // return res.status(404).send("Listing not found");
-      req.flash("error" , "Listing you requested for does not exist!");
+      req.flash("error", "Listing you requested for does not exist!");
       res.redirect("/listings");
     }
 
@@ -65,7 +67,8 @@ router.get("/:id", async (req, res) => {
 
 //update route
 router.put(
-  "/:id",
+  "/:id", 
+  isLoggedIn,
   validateListing,
   wrapAsync(async (req, res) => {
     let { id } = req.params;
@@ -91,6 +94,7 @@ router.put(
 //Delete route
 router.delete(
   "/:id",
+  isLoggedIn,
   wrapAsync(async (req, res) => {
     let { id } = req.params;
     await Listing.findByIdAndDelete(id);
@@ -102,12 +106,13 @@ router.delete(
 //edit route
 router.get(
   "/:id/edit",
+  isLoggedIn,
   wrapAsync(async (req, res) => {
     let { id } = req.params;
     const listing = await Listing.findById(id);
     if (!listing) {
       // return res.status(404).send("Listing not found");
-      req.flash("error" , "Listing you requested for does not exist!");
+      req.flash("error", "Listing you requested for does not exist!");
       res.redirect("/listings");
     }
     res.render("listings/edit.ejs", { listing });
