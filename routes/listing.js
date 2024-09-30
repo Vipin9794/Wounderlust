@@ -9,19 +9,19 @@ const multer  = require('multer')
 const upload = multer({ dest: 'uploads/' })
 
 //index route,
-router.route("/").get(wrapAsync(listingController.index))
+router.route("/").get(listingController.index)
 //.post(
   //Create route
 //   isLoggedIn,
 //   validateListing,
 //   wrapAsync(listingController.createListing)
 // );
-.post(upload.single('listing[image][url]'), (req, res) => {
-  if (!req.file) {
-      return res.status(400).send('No file uploaded.');
-  }
-  res.send(req.file);
+.post(upload.single('listing[image]'), (req, res) => {
+  
+  res.send("Working");
 });
+
+
 
 //New Route
 router.get("/new", isLoggedIn, listingController.renderNewForm);
