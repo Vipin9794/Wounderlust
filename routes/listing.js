@@ -5,14 +5,23 @@ const Listing = require("../models/listing.js");
 const { isLoggedIn, isOwner, validateListing } = require("../middleware.js");
 
 const listingController = require("../controllers/listings.js");
+const multer  = require('multer')
+const upload = multer({ dest: 'uploads/' })
 
 //index route,
-router.route("/").get(wrapAsync(listingController.index)).post(
+router.route("/").get(wrapAsync(listingController.index))
+//.post(
   //Create route
-  isLoggedIn,
-  validateListing,
-  wrapAsync(listingController.createListing)
-);
+//   isLoggedIn,
+//   validateListing,
+//   wrapAsync(listingController.createListing)
+// );
+.post(upload.single('listing[image][url]'), (req, res) => {
+  if (!req.file) {
+      return res.status(400).send('No file uploaded.');
+  }
+  res.send(req.file);
+});
 
 //New Route
 router.get("/new", isLoggedIn, listingController.renderNewForm);
