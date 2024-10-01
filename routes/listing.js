@@ -16,11 +16,9 @@ router.route("/").get(wrapAsync(listingController.index))
 //   isLoggedIn,
 //   validateListing,
 //   wrapAsync(listingController.createListing)
-// );
-.post(upload.single('listing[image]'), (req, res) => {
-  
-  res.send(req.file);
-});
+.post(upload.single('listing[image][url]'),wrapAsync(listingController.createListing));
+
+ 
 
 
 
