@@ -6,7 +6,8 @@
             <br><br>
             <h3>Edit your  Listing -</h3>
             <form method="POST" action="/listings/<%= listing._id %>?_method=PUT"
-                novalidate class="needs-validation"> 
+                novalidate class="needs-validation"
+                enctype="multipart/form-data"> 
                 <div class="mb-3">
                     <label for="title" class="form-label">Title :</label>
                     <input 
@@ -20,7 +21,7 @@
                 <div class="mb-3">
                     <label for="description" class="form-label">Discription :</label>
                     <textarea  
-                    name="listing[description] " 
+                    name="listing[description]" 
                     class="form-control" 
                     required >
                     <%= listing.description %>
@@ -28,11 +29,14 @@
                     <div class="invalid-feedback">Please enter a short description</div>
                 </div>
                 <div class="mb-3">
-                    <label for="image" class="form-label">Image Link :</label>
+                    Original Listing Image <br>
+                    <img src="<%= originalImageUrl  %>" alt="">
+                </div>
+                <div class="mb-3">
+                    <label for="image" class="form-label">New Image Upload :</label>
                     <input 
-                    type="text" 
-                    name="listing[image][url] " 
-                    value="<%= listing.image.url %>"
+                    type="file" 
+                    name="listing[image][url]" 
                     class="form-control"
                      >
                     <div class="invalid-feedback">Please enter a valid URL</div>
@@ -65,7 +69,7 @@
                     <label for="location" class="form-label">Location :</label>
                     <input 
                     type="text" 
-                    name="listing[location] " 
+                    name="listing[location]" 
                     value="<%= listing.location %>"
                     class="form-control"
                     required >
