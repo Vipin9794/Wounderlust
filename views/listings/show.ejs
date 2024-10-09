@@ -1,9 +1,6 @@
 <!-- show.ejs -->
 <% layout("/layouts/boilerplate") %>
-<script>
-  let mapToken = "<%= process.env.MAP_TOKEN %>";
-  const coordinates = "<%- JSON.stringify( listing.geometry.coordinates) %>";
-</script>
+
 <div class="row mt-3">
   <div class="col-8 offset-3">
     <h3><%= listing.title %></h3>
@@ -15,7 +12,7 @@
       alt="listing_image"
     />
     <div class="card-body">
-      <p class="card-text">Owned by <i> <%= listing.owner.username %></i></p>
+      <p class="card-text">Owned by <i><%= listing.owner.username %></i></p>
       <p class="card-text"><%= listing.description %></p>
       <p class="card-text">
         &#8377; <%= listing.price.toLocaleString("en-IN") %>
@@ -38,9 +35,8 @@
   </div>
 
   <div class="col-8 offset-3 mb-3">
-   
     <% if(currUser){ %>
-      <hr />
+    <hr />
     <h4>Leave a Review</h4>
     <form
       action="/listings/<%= listing.id %>/review"
@@ -115,10 +111,7 @@
         <button class="btn btn-outline-dark">Submit</button>
       </div>
     </form>
-    <% } %>
-
-   
-  <% if(listing.reviews.length > 0){ %> 
+    <% } %> <% if(listing.reviews.length > 0){ %>
     <div class="row">
       <p><b>All Review</b></p>
       <% for(review of listing.reviews){ %>
@@ -144,14 +137,30 @@
     </div>
     <% } %>
   </div>
+
+  <!-- Display map after this heading -->
   <div class="col-6 offset-3 mb-3">
     <h1>Display a map on a webpage</h1>
-    <div id="map"></div>
+    <div id="map" style="width: 100%; height: 400px"></div>
   </div>
- 
 </div>
 
-<script src="/js/map.js">
+<script>
+const mapToken = "<%=process.env.MAP_TOKEN%>";
+    const coordinates = JSON.parse("<%- JSON.stringify(listing.geometry.coordinates) %>");
+    
+    mapboxgl.accessToken = mapToken;
 
+    const map = new mapboxgl.Map({
+      container: 'map', // container ID
+      style: 'mapbox://styles/mapbox/streets-v11', // map style
+      center: coordinates, // starting position [lng, lat]
+      zoom: 9 // starting zoom
+    });
+
+    new mapboxgl.Marker({ color: "red" })
+      .setLngLat(coordinates)
+      .setPopup( new mapboxgl.Popup({ offset : 25 })
+      .setHTML(`<h4><%- listing.location %> </h4> <p> Exact location provided after booking</p>`))
+      .addTo(map);
 </script>
-
